@@ -1,5 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import Login from "./Login";
 function Header() {
+    const[login,setLogin]= useState(false)
+    const clickLogin=()=>{
+        setLogin(!login)
+    }
     return (
         <>
             <div>
@@ -47,7 +52,7 @@ function Header() {
                                     <li className="header__top-item"><i className="fa-solid fa-bell" />Thông Báo</li>
                                     <li className="header__top-item"><i className="fa-regular fa-circle-question" />Trợ giúp</li>
                                     <li className="header__top-item header__top-item--bond header__top-item--separate">Đăng Ký</li>
-                                    <li className="header__top-item header__top-item--bond">Đăng Nhập</li>
+                                    <li className="header__top-item header__top-item--bond" onClick={()=>clickLogin()}>Đăng Nhập</li>
                                     <li className="header__top-item header__content--cart"><i className="fa-solid fa-bag-shopping fa-xl"><span>0</span></i></li>
                                 </ul>
                             </div>
@@ -86,6 +91,8 @@ function Header() {
                         </div>
                     </div>
                 </header>
+                {login &&
+                <Login controlFalse={() => clickLogin()}/>}
             </div>
         </>
     )
