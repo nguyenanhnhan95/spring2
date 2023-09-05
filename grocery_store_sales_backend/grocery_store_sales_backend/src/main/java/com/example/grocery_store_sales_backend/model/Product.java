@@ -20,6 +20,8 @@ public class Product {
     @Column(nullable = false)
     private String manufactureProduct;
     @Column(nullable = false)
+    private String imgProduct;
+    @Column(nullable = false)
     private Long priceProduct;
     @Column(nullable = false)
     private  Long qualityProduct;
@@ -32,7 +34,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(Long id, String nameProduct, String detailProduct, String ingredientProduct, String instructionProduct, String preservationProduct, String brandProduct, String manufactureProduct, Long priceProduct, Long qualityProduct, Double bonusSale, boolean flagProduct, TypeProduct typeProduct) {
+    public Product(Long id, String nameProduct, String detailProduct, String ingredientProduct, String instructionProduct, String preservationProduct, String brandProduct, String manufactureProduct, String imgProduct, Long priceProduct, Long qualityProduct, Double bonusSale, boolean flagProduct, TypeProduct typeProduct) {
         this.id = id;
         this.nameProduct = nameProduct;
         this.detailProduct = detailProduct;
@@ -41,11 +43,20 @@ public class Product {
         this.preservationProduct = preservationProduct;
         this.brandProduct = brandProduct;
         this.manufactureProduct = manufactureProduct;
+        this.imgProduct = imgProduct;
         this.priceProduct = priceProduct;
         this.qualityProduct = qualityProduct;
         this.bonusSale = bonusSale;
         this.flagProduct = flagProduct;
         this.typeProduct = typeProduct;
+    }
+
+    public String getImgProduct() {
+        return imgProduct;
+    }
+
+    public void setImgProduct(String imgProduct) {
+        this.imgProduct = imgProduct;
     }
 
     public Long getId() {

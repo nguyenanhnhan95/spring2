@@ -1,0 +1,116 @@
+.manage__order {
+    width: 1250px;
+    max-width: 100%;
+    margin: 0 auto;
+    height: auto;
+    padding: 30px 0;
+}
+
+.manage__order-header {
+    text-align: center;
+    color: #FE9126;
+}
+
+.manage__order-search {
+    display: flex;
+    justify-content: right;
+    margin: 20px 0;
+}
+
+.manage__order-search-list {
+    display: flex;
+    width: 50%;
+    padding-left: 0;
+    justify-content: space-around;
+}
+
+.manage__order-search input {
+    width: 130px;
+    height: 25px;
+    border-radius: 3px;
+    border-color: #FE9126;
+}
+
+.manage__order-search input::placeholder {
+    text-align: center;
+}
+
+.manage__order-search button {
+    border-color: #FE9126;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: white;
+    color: #FE9126;
+}
+
+.manage__order-search button:hover {
+    background-color: #FE9126;
+    color: white;
+}
+
+.manage__order-search i {
+    padding-top: 15px;
+    color: #FE9126;
+}
+
+.manage__order-search span {
+    color: #FE9126;
+    font-size: 1.1rem;
+    padding-right: 15px;
+    font-weight: bold;
+    padding-top: 5px;
+}
+
+.table__manage-order {
+    width: 100%;
+    border-spacing: 0;
+}
+
+.table__manage-order thead {
+    background-color: #FE9126;
+    color: white;
+    border-radius: 5px;
+    height: 40px;
+}
+
+.table__manage-order thead th {
+    border: none;
+}
+.table__manage-order tbody td{
+    text-align: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #FE9126;
+}
+.manage-order-pagination{   
+    width: 1250px;
+    max-width: 100%;
+    margin: 15px auto;
+    display: flex;
+    justify-content: end;
+}
+.manage-order-pagination-list{
+    padding-left: 0;
+    list-style: none;
+}
+.manage-order-pagination-item{
+    display: inline-block;
+}
+.manage-order-pagination-item button{
+    width: 45px;
+    height: 25px;
+    background-color: #FE9126;
+    border-color: white;
+    cursor: pointer;
+}
+.manage-order-pagination-item button:hover{
+    color: white;
+    border-color: #FE9126;
+}
+.manage-order-pagination-item-first{
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+}
+.manage-order-pagination-item-last{
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+}

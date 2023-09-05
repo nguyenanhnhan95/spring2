@@ -7,7 +7,7 @@ public class OrderDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(columnDefinition = "int default 0")
+    @Column(columnDefinition = "int default 1")
     private int numberDetail;
     @Column(columnDefinition = "int default 0")
     private boolean statusBooking;
