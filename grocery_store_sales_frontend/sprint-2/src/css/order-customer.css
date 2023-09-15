@@ -25,6 +25,7 @@
     margin-top: 10px;
     font-weight: bold;
     cursor: pointer;
+    color: #FE9126;
 
 }
 .header_order__customer--item:hover{
@@ -67,9 +68,11 @@
     height: 22px;
     border-radius: 5px;
     min-width: 150px;
+    border-color:#FE9126 ;
 }
 .search_order__customer--input{
     margin: 15px 0;
+    color: #FE9126;
 }
 .search_order__customer--input span{
     padding-left: 90px;
@@ -93,9 +96,12 @@
 .search_order__customer-left i:hover{
     color: #FE9126;
 }
+
 .content_order__customer{
     width: 1250px;
     max-width: 100%;
+    height: auto;
+    padding: 30px auto;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -120,7 +126,7 @@
 
 .content_order__customer-profile-list{
     list-style: none;
-
+    margin-bottom: 30px;
 }
 .content_order__customer-profile-item{
     margin-top: 15px;
@@ -151,7 +157,7 @@
 .content_order__customer-order-item{
     display: inline-block;
     margin-right: 90px;
-  
+    padding-top: 15px;
 }
 .content_order__customer-product{
     width: 820px;

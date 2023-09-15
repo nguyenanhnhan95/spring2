@@ -16,6 +16,8 @@ public class Product {
     private String instructionProduct;
     private String preservationProduct;
     @Column(nullable = false)
+    private String releaseDate;
+    @Column(nullable = false)
     private String brandProduct;
     @Column(nullable = false)
     private String manufactureProduct;
@@ -25,6 +27,8 @@ public class Product {
     private Long priceProduct;
     @Column(nullable = false)
     private  Long qualityProduct;
+
+    @Column(columnDefinition = "double default 0.0")
     private Double bonusSale;
     @Column(columnDefinition = "int default 0")
     private boolean flagProduct;
@@ -34,13 +38,14 @@ public class Product {
     public Product() {
     }
 
-    public Product(Long id, String nameProduct, String detailProduct, String ingredientProduct, String instructionProduct, String preservationProduct, String brandProduct, String manufactureProduct, String imgProduct, Long priceProduct, Long qualityProduct, Double bonusSale, boolean flagProduct, TypeProduct typeProduct) {
+    public Product(Long id, String nameProduct, String detailProduct, String ingredientProduct, String instructionProduct, String preservationProduct, String releaseDate, String brandProduct, String manufactureProduct, String imgProduct, Long priceProduct, Long qualityProduct, Double bonusSale, boolean flagProduct, TypeProduct typeProduct) {
         this.id = id;
         this.nameProduct = nameProduct;
         this.detailProduct = detailProduct;
         this.ingredientProduct = ingredientProduct;
         this.instructionProduct = instructionProduct;
         this.preservationProduct = preservationProduct;
+        this.releaseDate = releaseDate;
         this.brandProduct = brandProduct;
         this.manufactureProduct = manufactureProduct;
         this.imgProduct = imgProduct;
@@ -49,6 +54,15 @@ public class Product {
         this.bonusSale = bonusSale;
         this.flagProduct = flagProduct;
         this.typeProduct = typeProduct;
+    }
+
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
     public String getImgProduct() {

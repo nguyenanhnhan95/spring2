@@ -12,19 +12,27 @@ public class CartDetail {
     @Column(columnDefinition = "int default 0")
     private boolean flagCart;
     @ManyToOne
-    private Customer customer;
+    private Users users;
     @ManyToOne
     private Product product;
 
     public CartDetail() {
     }
 
-    public CartDetail(Long id, int numberCart, boolean flagCart, Customer customer, Product product) {
+    public CartDetail(Long id, int numberCart, boolean flagCart, Users users, Product product) {
         this.id = id;
         this.numberCart = numberCart;
         this.flagCart = flagCart;
-        this.customer = customer;
+        this.users = users;
         this.product = product;
+    }
+
+    public Users getUsers() {
+        return users;
+    }
+
+    public void setUsers(Users users) {
+        this.users = users;
     }
 
     public Long getId() {
@@ -51,12 +59,12 @@ public class CartDetail {
         this.flagCart = flagCart;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Users getUser() {
+        return users;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setUser(Users users) {
+        this.users = users;
     }
 
     public Product getProduct() {

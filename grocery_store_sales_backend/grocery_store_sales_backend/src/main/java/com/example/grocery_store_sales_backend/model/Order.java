@@ -16,18 +16,18 @@ public class Order {
     @ManyToOne
     private StatusOrder statusOrder;
     @ManyToOne
-    private Customer customer;
+    private Users users;
 
     public Order() {
     }
 
-    public Order(Long id, String dateOrder, String noteOrder, boolean flagOrder, StatusOrder statusOrder, Customer customer) {
+    public Order(Long id, String dateOrder, String noteOrder, boolean flagOrder, StatusOrder statusOrder, Users users) {
         this.id = id;
         this.dateOrder = dateOrder;
         this.noteOrder = noteOrder;
         this.flagOrder = flagOrder;
         this.statusOrder = statusOrder;
-        this.customer = customer;
+        this.users = users;
     }
 
     public Long getId() {
@@ -70,11 +70,11 @@ public class Order {
         this.statusOrder = statusOrder;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Users getUser() {
+        return users;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setUser(Users users) {
+        this.users = users;
     }
 }

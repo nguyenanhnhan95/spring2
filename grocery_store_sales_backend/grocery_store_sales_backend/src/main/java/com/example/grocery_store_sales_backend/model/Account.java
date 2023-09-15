@@ -1,13 +1,23 @@
 package com.example.grocery_store_sales_backend.model;
 
+import antlr.collections.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Entity
 public class Account {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true)
     private String email;
+//    @JsonIgnore
     @Column(nullable = false)
     private String password;
     @ManyToOne

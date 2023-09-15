@@ -1,0 +1,76 @@
+.register__container{
+    background-color: #F5F5F5;
+    width: 100%;
+}
+.register{
+    margin-top:2%;
+    margin-left: 35%;
+    margin-bottom:10%;
+    width: 600px;
+    height: 550px;
+    border-radius: 5px;
+    background-color: white;
+    border: 1px solid #FE9126;
+}
+.register__header{
+    width: 100%;
+    height: 45px;
+    border-top-left-radius:5px ;
+    border-top-right-radius:5px ;
+    background-color: #FE9126;
+}
+.register__header h1{
+    margin-top: 0;
+    text-align: center;
+    color: white;
+    font-size: 1.6rem;
+    padding-top: 5px;
+}
+.register__content{
+    margin: 0 10px ;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.text-red{
+    color: red;
+}
+.register__content-item{
+    min-width: 200px;
+    margin: 30px 0;
+    position: relative;
+}
+.register__content-label{
+    font-weight: bold;
+}
+.register__content-input{
+    position: absolute;
+    border-radius: 3px;
+    top:20px;
+    left: 0;
+    min-width: 200px;
+    height: 25px;
+}
+.register__content-error{
+    position: absolute;
+    top:55px;
+}
+.register__content-input-label{
+    margin-right: 10px;
+}
+.register__footer{
+    margin: 20px 50px;
+    display: flex;
+    justify-content: end;
+}
+.register__footer-button button{
+    margin-top: 20px;
+    height: 30px;
+    width: 200px;
+}
+.register__footer-button button:hover{
+    background-color:#FE9126 ;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+}
