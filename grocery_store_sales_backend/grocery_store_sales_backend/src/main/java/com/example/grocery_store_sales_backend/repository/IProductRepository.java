@@ -5,10 +5,12 @@ import com.example.grocery_store_sales_backend.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,10 +41,12 @@ public interface IProductRepository extends JpaRepository<Product, Integer> {
             "order by totalSold desc", nativeQuery = true)
     Page<IProductProjection> searchPopularProduct(Pageable pageable);
 
-    @Query(value = "select products.id, products.brand_product as brandProduct, products.price_product as priceProduct, products.bonus_sale as bonusSale,\n" +
-            "       products.img_product  as imgProduct ,sum(number_detail) as totalSold  from products\n" +
-            "join order_detail od on products.id = od.product_id\n" +
-            "join products p on p.id = od.product_id\n" +
-            "group by p.id order by totalSold desc",nativeQuery = true)
+    @Query(value = "select products.id, products.brand_product as brandProduct, products.price_product as priceProduct, products.bonus_sale as bonusSale,     products.img_product  as imgProduct ,total_sold as totalSold  from products\n" +
+            "    order by total_sold desc",nativeQuery = true)
     Page<IProductProjection> searchTopSaleProduct(Pageable pageable);
+    @Transactional
+    @Modifying
+    @Query(value = "update products set quality_product=quality_product-:number\n" +
+            "where id=:id",nativeQuery = true)
+    int updateQualityProductSold(@Param("number")int number,@Param("id")Long id);
 }

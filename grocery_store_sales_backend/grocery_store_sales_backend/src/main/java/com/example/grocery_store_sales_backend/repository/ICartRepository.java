@@ -28,4 +28,8 @@ public interface ICartRepository extends JpaRepository<CartDetail,Long> {
     @Query(value = "update cart_detail\n" +
             "set number_cart=:#{#cartDetail.numberCart} where id=:#{#cartDetail.id}", nativeQuery = true)
     int updateNumberCart(@Param("cartDetail") CartDetail cartDetail);
+    @Modifying
+    @Transactional
+    @Query(value = "delete from cart_detail where  users_id = :idUser",nativeQuery = true)
+    int deleteCartsByIdUser(@Param("idUser")Integer idUser);
 }

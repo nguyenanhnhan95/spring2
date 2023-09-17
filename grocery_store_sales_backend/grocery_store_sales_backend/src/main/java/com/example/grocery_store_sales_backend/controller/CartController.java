@@ -87,6 +87,31 @@ public class CartController {
         }
         return  new ResponseEntity<>(HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @PostMapping ("/detail")
+    public ResponseEntity<CartDetail> saveCartsProductDetail(@RequestParam("id")String id,@RequestParam("number")String number) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Users user = userService.getUserByEmail(email).get();
+        Product product=productService.getProduct(Long.valueOf(id)).get();
+        if(product ==null || user==null){
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+        Long newNumber = Long.valueOf(number);
+        if(newNumber<1 || newNumber>product.getQualityProduct()){
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+        CartDetail cartDetail=new CartDetail();
+        cartDetail.setNumberCart(Integer.parseInt(number));
+        cartDetail.setUser(user);
+        cartDetail.setFlagCart(false);
+        cartDetail.setProduct(product);
+        if(cartService.saveCard(cartDetail)!=null){
+            return new ResponseEntity<>(cartDetail,HttpStatus.OK);
+        }
+        return  new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("")

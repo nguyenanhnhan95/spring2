@@ -6,6 +6,7 @@ import com.example.grocery_store_sales_backend.dto.AccountDto;
 import com.example.grocery_store_sales_backend.dto.UserDto;
 import com.example.grocery_store_sales_backend.model.JwtRequest;
 import com.example.grocery_store_sales_backend.model.JwtResponse;
+import com.example.grocery_store_sales_backend.model.Users;
 import com.example.grocery_store_sales_backend.service.IUserService;
 import com.example.grocery_store_sales_backend.service.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,16 +56,9 @@ public class JwtAuthenticationController {
                 .loadUserByUsername(authenticationRequest.getEmail());
 
         final String token = jwtTokenUtil.generateToken(userDetails);
-        final String avatar;
-        final Integer id=userService.getUserByEmail(authenticationRequest.getEmail()).get().getId();
-        final String nameUser=userService.getUserByEmail(authenticationRequest.getEmail()).get().getNameUser();
-        if(userService.getUserByEmail(authenticationRequest.getEmail()).isPresent()){
-             avatar =userService.getUserByEmail(authenticationRequest.getEmail()).get().getImgUser();
+        final Users user= userService.getUserByEmail(authenticationRequest.getEmail()).get();
 
-        }else {
-            avatar="https://bookvexe.vn/wp-content/uploads/2023/04/chon-loc-25-avatar-facebook-mac-dinh-chat-nhat_2.jpg";
-        }
-        return ResponseEntity.ok(new JwtResponse(id,token,avatar,userDetails.getUsername(), userDetails.getAuthorities().toArray()[0].toString(),nameUser));
+        return ResponseEntity.ok(new JwtResponse(user.getId(),token,userDetails.getUsername(),user.getNameUser(),user.getImgUser(),user.getAccount().getRole().getNameRole()));
     }
 
 

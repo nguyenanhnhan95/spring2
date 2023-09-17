@@ -1,7 +1,13 @@
 export const LOGIN=(data)=>{
     console.log(data)
     return{
-        type : "login",
+        type : "LOG-IN",
         payload: data
     }
 }
+
+export const getFlagLogin=(state)=>{
+    console.log(state.loginReducer.flagLogin)
+    return state.loginReducer.flagLogin;
+}
+

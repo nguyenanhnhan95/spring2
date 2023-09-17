@@ -1,18 +1,28 @@
 import { useParams } from 'react-router-dom';
 import '../css/detail-product.css'
 import '../css/home.css'
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { getImgProductsDB, getProductDB, getProductsAllDB, getProductsDB } from '../service/ProductService';
 import Carousel from 'react-multi-carousel'
 import "react-multi-carousel/lib/styles.css";
 import numeral from 'numeral';
+import { getCartsByEmailUserDB, saveCartsDB, saveCartsProductDetailDB, updateCartsDB } from '../service/CardService';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, getCart } from '../actions/cartActions';
 function ProductDetail() {
   const pram = useParams();
   const [product, setProduct] = useState(null)
   const [imgProducts, setImgProducts] = useState([])
   const [imgProduct, setImgProduct] = useState("")
-  const [products,setProducts]=useState([])
-  
+  const [products, setProducts] = useState([])
+  const [numberProduct, setNumberProduct] = useState(1)
+  const dispatch = useDispatch()
+  const flagOfCart = useSelector(getCart)
+  const headers = {
+    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+  }
+
+
   useEffect(() => {
     getProduct()
     getImgProduct();
@@ -20,19 +30,69 @@ function ProductDetail() {
 
   const getProduct = () => {
     getProductDB(pram.id).then((data) => {
-      getProductsAllDB(data.typeProduct.id).then((data)=>{
+      getProductsAllDB(data.typeProduct.id).then((data) => {
         console.log(data.content);
         setProducts(data.content)
-        
+
       })
       console.log(data);
       setProduct(data)
     })
-    .catch(()=>{
-      alert("loi")
+      .catch(() => {
+        alert("loi")
+      })
+  }
+  const handleCart = (value,number) => {
+    console.log(value)
+    console.log(localStorage.getItem("id"))
+    getCartsByEmailUserDB(localStorage.getItem("id")).then((data) => {
+      console.log(data)
+      let index;
+      if (data.length === 0) {
+        index = -1;
+      } else {
+        index = data.findIndex(p => p.product.id === value.id)
+      }
+      if (index >= 0) {
+        if (number > value.qualityProduct) {
+          return 0;
+        } else {
+          if(number==1){
+            data[index].numberCart +=1;
+          }else{
+            data[index].numberCart = number;
+          }
+          
+          console.log(data[index])
+          updateCartsDB(data[index]).then(() => {
+            console.log(data)
+          })
+
+        }
+
+      } else {
+        console.log("ccc")
+        saveCartsProductDetailDB(value.id,number, headers).then(() => {
+
+          console.log(data.length)
+
+        })
+      }
+      setTimeout(() => {
+        dispatch(addToCart({ flagCart: flagOfCart }))
+      }, 100);
+
     })
   }
-  
+  const handleButtonCart = (number) => {
+
+    console.log(number)
+    if (0 < number && number <= product.qualityProduct) {
+      setNumberProduct(number)
+    }
+  }
+
+
   const getImgProduct = () => {
     getImgProductsDB(pram.id).then((data) => {
       setImgProduct(data[0].imgProducts)
@@ -42,7 +102,7 @@ function ProductDetail() {
   }
   const changeImgProduct = (index) => {
     setImgProduct(imgProducts[index].imgProducts)
-  
+
   }
   const breakPoints = [
     { width: 1, itemsToShow: 1 },
@@ -69,7 +129,7 @@ function ProductDetail() {
       items: 2
     }
   };
-  if (product === null ) {
+  if (product === null) {
     return null
   }
   return (
@@ -90,7 +150,7 @@ function ProductDetail() {
             </div>
             <div className="detail__product__left-img-footer">
               <ul className="detail__product__left-img-footer-list">
-                {imgProducts && imgProducts.map((img,index) => (
+                {imgProducts && imgProducts.map((img, index) => (
                   <li key={index} onMouseOver={() => changeImgProduct(index)} className="detail__product__left-img-footer-item">
                     <img src={img.imgProducts} />
                   </li>
@@ -153,17 +213,29 @@ function ProductDetail() {
                   Số lượng
                 </div>
                 <div className="detail__product__right-item-right detail__product__right-item-right-card">
-                  <button className="button-number-item">-</button>
-                  <input type="number" placeholder={1} />
-                  <button className="button-number-item">+</button>
-                  <span>{product.qualityProduct} Sản phẩm còn lại</span>
+                  {product.qualityProduct === 0 ? (
+                    <span> Sản phẩm đã hết hàng </span>
+                  ) : (
+                    <>
+                      <button type='button' className="button-number-item" onClick={()=>handleButtonCart(numberProduct-1)}>-</button>
+                      <input type="number" readOnly placeholder={numberProduct} />
+                      <button type='button' className="button-number-item" onClick={() => handleButtonCart(numberProduct + 1)}>+</button>
+                      <span>{product.qualityProduct-numberProduct} Sản phẩm còn lại</span>
+                    </>
+                  )}
+
                 </div>
               </li>
-              <li className="detail__product__right-item detail__product__right-item-content">
-                <button className="detail__product__right-item-cart-shopping"><i className="fa-solid fa-cart-shopping" />Thêm Vào Giỏ Hàng</button>
-                <button className="detail__product__right-item-pay">Mua Ngay</button>
-               
-              </li>
+              {product.qualityProduct !== 0 ? (
+                <li className="detail__product__right-item detail__product__right-item-content">
+                  <button className="detail__product__right-item-cart-shopping" onClick={() => handleCart(product,numberProduct)}><i className="fa-solid fa-cart-shopping" />Thêm Vào Giỏ Hàng</button>
+                  <button className="detail__product__right-item-pay">Mua Ngay</button>
+
+                </li>
+              ) : (
+                null
+              )}
+
             </ul>
           </div>
         </div>
@@ -242,24 +314,24 @@ function ProductDetail() {
           <div className="detail__product__review-header">
 
             <p>Sản phẩm cùng loại</p>
-            </div>
-            <div className="detail__product__review-content">
+          </div>
+          <div className="detail__product__review-content">
             <Carousel breakPoints={breakPoints} responsive={responsive}>
               {products && products.map((product) => (
                 <div key={product.id} class="card-detail">
-                <img src={product.imgProduct}  />
-                <h4>{product.brandProduct}</h4>
-                <div class="price-detail">
-                {product.bonusSale !== 0 && (
-                            <del>{numeral(product.priceProduct).format('00,0 đ')}</del>
-                          )}
-                          <span>{numeral(product.priceProduct*(1-product.bonusSale)).format('00,0 đ')}VND</span></div>
-            
-               <button>Thêm giỏ hàng</button>
-              </div>
+                  <img src={product.imgProduct} />
+                  <h4>{product.brandProduct}</h4>
+                  <div class="price-detail">
+                    {product.bonusSale !== 0 && (
+                      <del>{numeral(product.priceProduct).format('00,0 đ')}</del>
+                    )}
+                    <span>{numeral(product.priceProduct * (1 - product.bonusSale)).format('00,0 đ')}VND</span></div>
+
+                  <button type='button' onClick={()=>handleCart(product,1)}>Thêm giỏ hàng</button>
+                </div>
               ))}
             </Carousel>
-            </div>
+          </div>
         </div>
       </div>
     </>

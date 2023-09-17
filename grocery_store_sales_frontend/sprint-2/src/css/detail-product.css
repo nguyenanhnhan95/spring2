@@ -111,20 +111,25 @@
     color: #7a7171;
 }
 .button-number-item{
-    width: 33px;
+    width: 35px;
     height: 33px;
     background-color: white;
     cursor: pointer;
-    border: 1px solid #7a7171;
+    border: 1px solid #FE9126;
     font-size: 1.1rem;
+}
+.button-number-item:hover{
+    background-color: #FE9126;
+    color: white;
 }
 .detail__product__right-item-right input{
     padding: 0;
     width: 50px;
-    height: 32px;
-    border: 1px solid #7a7171;
+    height: 31px;
+    border: 1px solid #FE9126;
     border-left: none;
     border-right: none;
+    
 }
 .detail__product__right-item-right input::placeholder{
     text-align: center;

@@ -27,7 +27,8 @@ public class Product {
     private Long priceProduct;
     @Column(nullable = false)
     private  Long qualityProduct;
-
+    @Column(columnDefinition = "bigint default 0")
+    private Long totalSold;
     @Column(columnDefinition = "double default 0.0")
     private Double bonusSale;
     @Column(columnDefinition = "int default 0")
@@ -38,7 +39,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(Long id, String nameProduct, String detailProduct, String ingredientProduct, String instructionProduct, String preservationProduct, String releaseDate, String brandProduct, String manufactureProduct, String imgProduct, Long priceProduct, Long qualityProduct, Double bonusSale, boolean flagProduct, TypeProduct typeProduct) {
+    public Product(Long id, String nameProduct, String detailProduct, String ingredientProduct, String instructionProduct, String preservationProduct, String releaseDate, String brandProduct, String manufactureProduct, String imgProduct, Long priceProduct, Long qualityProduct, Long totalSold, Double bonusSale, boolean flagProduct, TypeProduct typeProduct) {
         this.id = id;
         this.nameProduct = nameProduct;
         this.detailProduct = detailProduct;
@@ -51,11 +52,19 @@ public class Product {
         this.imgProduct = imgProduct;
         this.priceProduct = priceProduct;
         this.qualityProduct = qualityProduct;
+        this.totalSold = totalSold;
         this.bonusSale = bonusSale;
         this.flagProduct = flagProduct;
         this.typeProduct = typeProduct;
     }
 
+    public Long getTotalSold() {
+        return totalSold;
+    }
+
+    public void setTotalSold(Long totalSold) {
+        this.totalSold = totalSold;
+    }
 
     public String getReleaseDate() {
         return releaseDate;

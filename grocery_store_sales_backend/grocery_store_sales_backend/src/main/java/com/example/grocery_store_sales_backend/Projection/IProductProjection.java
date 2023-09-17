@@ -6,4 +6,5 @@ public interface IProductProjection {
     String getBrandProduct();
     Long getPriceProduct();
     Double getBonusSale();
+    Long getTotalSold();
 }

@@ -24,7 +24,7 @@ public class JwtTokenUtil implements Serializable {
     private static final long serialVersionUID = -2550185165626007488L;
 //    UID phiên bản cho việc tuần tự hóa và giải tuần tự hóa của lớp.
 
-    public static final long JWT_TOKEN_VALIDITY = 12 * 60 * 60;
+    public static final long JWT_TOKEN_VALIDITY = 120000 * 60 * 60;
     // Thời gian hiệu lực của mã thông báo JWT (tính bằng giây).
 
     @Value("${jwt.secret}")

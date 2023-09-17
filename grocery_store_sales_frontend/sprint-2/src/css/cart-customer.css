@@ -3,7 +3,7 @@
     max-width: 100%;
     margin: auto;
 
-    min-height: auto;
+    min-height: 500px;
     padding-bottom: 100px;
 }
 .card_customer-content{
@@ -169,4 +169,24 @@
 }
 .card_customer-left-payment-total-price{
     color: red;
+}
+.button_payment_total{
+    display: flex;
+    justify-content: end;
+}
+.button_payment_total button{
+    height: 35px;
+    width: 130px;
+    font-size: 1.1rem;
+    word-spacing:3px;
+    border-radius: 5px;
+    border-color: #FE9126;
+    background-color:white;
+    color: #FE9126;
+}
+.button_payment_total button:hover{
+    cursor: pointer;
+    color: white;
+    background-color: white;
+    background-color: #FE9126;
 }

@@ -10,42 +10,41 @@ public class JwtResponse implements Serializable {
     private static final long serialVersionUID = -8091879091924046844L;
     private final Integer id;
     private final String jwttoken;
-    private final String avatar;
     private final String email;
+    private final String nameUser;
+    private final String avatar;
     private final String nameRole;
-    private final  String nameUser;
 
-
-    public JwtResponse(Integer id,String jwttoken, String avatar, String email, String nameRole, String nameUser) {
+    public JwtResponse(Integer id,String jwttoken,  String email,String nameUser,String avatar,String nameRole) {
         this.id=id;
         this.jwttoken = jwttoken;
-        this.avatar = avatar;
         this.email = email;
-        this.nameRole = nameRole;
-        this.nameUser = nameUser;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getAvatar() {
-        return avatar;
+        this.nameUser=nameUser;
+        this.avatar=avatar;
+        this.nameRole=nameRole;
     }
 
     public String getNameRole() {
         return nameRole;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public String getToken() {
-        return this.jwttoken;
+    public Integer getId() {
+        return id;
     }
 
     public String getNameUser() {
         return nameUser;
+    }
+
+    public String getJwttoken() {
+        return jwttoken;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }

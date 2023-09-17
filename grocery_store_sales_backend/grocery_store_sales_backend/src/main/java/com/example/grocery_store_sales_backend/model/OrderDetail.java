@@ -27,6 +27,13 @@ public class OrderDetail {
         this.product = product;
     }
 
+    public OrderDetail(int numberDetail, boolean statusBooking, Order order, Product product) {
+        this.numberDetail = numberDetail;
+        this.statusBooking = statusBooking;
+        this.order = order;
+        this.product = product;
+    }
+
     public Long getId() {
         return id;
     }

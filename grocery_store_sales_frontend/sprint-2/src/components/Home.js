@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useLayoutEffect, useState } from "react";
 import ProductDetail from "./ProductDetail";
 import '../css/home.css'
 import '../css/detail-product.css'
@@ -11,6 +11,7 @@ import { Await, Link, useNavigate, useSearchParams, useParams, useLocation } fro
 import { addToCart, getCart } from "../actions/cartActions";
 import { getCartsByEmailUserDB, getCartsByIdProduct, saveCartsDB, updateCartsDB } from "../service/CardService";
 import { getSearch, getSearchStatus, searchListProduct } from "../actions/searchAction";
+import { paidOrderDB } from "../service/PaymentService";
 function Home() {
   const [products, setProducts] = useState([])
   const [product, setProduct] = useState()
@@ -25,16 +26,35 @@ function Home() {
   const dispatch = useDispatch();
   const flagOfCart = useSelector(getCart)
   const dataSearch = useSelector(getSearch)
+  console.log(flagOfCart)
  
   const flagSearch=useSelector(getSearchStatus)
+  const [paymentParam,setPaymentParam]=useSearchParams()
+  const totalPaid=paymentParam.get("vnp_Amount");
+  console.log(totalPaid)
+  const statusPayment=paymentParam.get("vnp_ResponseCode");
+  console.log(statusPayment)
   const headers = {
     'Authorization': `Bearer ${localStorage.getItem("token")}`,
   }
 
   useEffect(() => {
-
     getProduct()
   }, [ flagSearch ])
+  const handlePayment=()=>{
+    paidOrderDB(totalPaid,headers).then(()=>{
+      dispatch(addToCart({ flagCart: flagOfCart }))
+      navigate("/")
+    }).catch(()=>{
+      console.log("loi")
+    })
+  }
+  useEffect(()=>{
+    if(statusPayment==="00"){
+      handlePayment()
+    }
+
+  },[statusPayment])
 
   const getProduct = () => {
     getProductsDB(dataSearch[0], dataSearch[1], dataSearch[2], dataSearch[3]).then((data) => {
@@ -99,6 +119,7 @@ function Home() {
           })
           statusAdd = 1;
         } else {
+          console.log("ccc")
           saveCartsDB(product.id, headers).then(() => {
 
             console.log(data.length)
@@ -106,7 +127,10 @@ function Home() {
           })
           statusAdd = 0;
         }
-        dispatch(addToCart({ flagCart: flagOfCart }))
+        setTimeout(() => {
+          dispatch(addToCart({ flagCart: flagOfCart }))
+        }, 100);
+        
       })
 
     })

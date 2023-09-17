@@ -30,6 +30,14 @@ public class Order {
         this.users = users;
     }
 
+    public Order(String dateOrder, String noteOrder, boolean flagOrder, StatusOrder statusOrder, Users users) {
+        this.dateOrder = dateOrder;
+        this.noteOrder = noteOrder;
+        this.flagOrder = flagOrder;
+        this.statusOrder = statusOrder;
+        this.users = users;
+    }
+
     public Long getId() {
         return id;
     }

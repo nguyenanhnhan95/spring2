@@ -46,4 +46,15 @@ public class ProductService implements IProductService {
     public Page<IProductProjection> getAllProductByType(int id, Pageable pageable) {
         return productRepository.getAllProductByType(id, pageable);
     }
+
+    @Override
+    public boolean updateNumberOfProductSold(int number, Long idProduct) {
+        if(productRepository.updateQualityProductSold(number,idProduct)!=0){
+            return true;
+        }else {
+
+            return false;
+        }
+
+    }
 }

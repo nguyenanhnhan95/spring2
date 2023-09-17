@@ -70,4 +70,17 @@ public class CartService implements ICartService{
             return false;
         }
     }
+
+    @Override
+    public boolean deleteCardsUser(Integer idUser) {
+        int i=cartRepository.deleteCartsByIdUser(idUser);
+        System.out.println(i);
+        if(i!=0){
+
+            return true;
+        }else {
+
+            return false;
+        }
+    }
 }

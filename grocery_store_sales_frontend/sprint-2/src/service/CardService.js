@@ -20,3 +20,7 @@ export const saveCartsDB=async(id,headers)=>{
     const response = await axios.post(`http://localhost:8080/carts?id=${id}`,null,{headers})
     return response.data;
 }
+export const saveCartsProductDetailDB=async(id,number,headers)=>{
+    const response = await axios.post(`http://localhost:8080/carts/detail?id=${id}&number=${number}`,null,{headers})
+    return response.data;
+}

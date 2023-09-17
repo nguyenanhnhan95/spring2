@@ -13,4 +13,5 @@ public interface ICartService {
     CartDetail saveCard(CartDetail cartDetail);
 
     boolean updateCard(CartDetail cartDetail);
+    boolean deleteCardsUser(Integer idUser);
 }

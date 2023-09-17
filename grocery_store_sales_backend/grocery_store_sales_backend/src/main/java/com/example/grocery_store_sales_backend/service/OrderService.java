@@ -2,6 +2,7 @@ package com.example.grocery_store_sales_backend.service;
 
 import com.example.grocery_store_sales_backend.Projection.IOrderCustomerProjection;
 import com.example.grocery_store_sales_backend.Projection.IOrderProjection;
+import com.example.grocery_store_sales_backend.model.Order;
 import com.example.grocery_store_sales_backend.repository.IOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,5 +21,10 @@ public class OrderService implements IOrderService{
     @Override
     public Page<IOrderProjection> getOrdersManage(String name, Pageable pageable) {
         return orderRepository.getManageOrder(name,pageable);
+    }
+
+    @Override
+    public Order saveOrder(Order order) {
+        return orderRepository.save(order);
     }
 }

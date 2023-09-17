@@ -12,35 +12,40 @@ function Header() {
     const location = useLocation();
     const navigate = useNavigate();
     const [search, setSearch] = useState("")
-    const [typeProduct, setTypeProduct] = useState(0)
     const [user, setUser] = useState(null)
     const [carts, setCarts] = useState([])
     const dispatch=useDispatch()
     const flagSearch=useSelector(getSearchStatus)
+     let count=0;
 
     const flagOfCart=useSelector(getCart)
+    console.log(flagOfCart)
 
     useEffect(() => {
-        
-        
+     
+    
         if(headers.Authorization!='Bearer null'){
             getUserByEmail()
         }      
-    }, [flagOfCart])
+    }, [flagOfCart,location])
     const headers={
         'Authorization': `Bearer ${localStorage.getItem("token")}`,
     }
-    
+    console.log(localStorage.getItem("token"))
     console.log(headers)
    
     const getUserByEmail = () => {
         getUserByEmailDB(headers).then((data) => {
             setUser(data)
-            console.log("nhan")
+            console.log(data.id)
+            console.log(count)
             getCartsByEmailUserDB(data.id).then((data) => {
+                console.log(data)
+                console.log("vu")
                 const car=data
                 car.sort((a, b) => b.id - a.id);
                 setCarts(car)
+                console.log(count)
                 console.log(data)
             }).catch(()=>{
                 setCarts([])
@@ -282,4 +287,4 @@ function Header() {
         </>
     )
 }
-export default Header;
+export default memo(Header);

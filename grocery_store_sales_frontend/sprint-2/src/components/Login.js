@@ -21,7 +21,7 @@ function Login() {
       localStorage.setItem("avatar", data.avatar)
       localStorage.setItem("id", data.id)
       console.log(data);
-      localStorage.setItem("token",data.token)
+      localStorage.setItem("token",data.jwttoken)
       dispatch(LOGIN(data))
       navigate("/")
       Swal.fire({
