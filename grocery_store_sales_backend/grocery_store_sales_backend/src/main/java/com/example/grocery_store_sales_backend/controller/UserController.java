@@ -31,6 +31,15 @@ public class UserController {
             return new ResponseEntity<>( HttpStatus.NO_CONTENT);
         }
     }
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/find-user")
+    public ResponseEntity<Users> getByIdUser(@RequestParam("id")String id) {
+        if (userService.getUserById(Integer.valueOf(id)).isPresent()) {
+            return new ResponseEntity<>(userService.getUserById(Integer.valueOf(id)).get(),HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>( HttpStatus.NO_CONTENT);
+        }
+    }
 
 
 }

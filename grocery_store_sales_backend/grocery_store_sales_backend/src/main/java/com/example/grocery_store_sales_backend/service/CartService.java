@@ -75,12 +75,12 @@ public class CartService implements ICartService{
     public boolean deleteCardsUser(Integer idUser) {
         int i=cartRepository.deleteCartsByIdUser(idUser);
         System.out.println(i);
-        if(i!=0){
-
-            return true;
-        }else {
+        if(i<0){
 
             return false;
+        }else {
+
+            return true;
         }
     }
 }

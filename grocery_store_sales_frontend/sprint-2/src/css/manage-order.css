@@ -13,47 +13,53 @@
 
 .manage__order-search {
     display: flex;
-    justify-content: right;
+    justify-content: end;
     margin: 20px 0;
+
 }
 
 .manage__order-search-list {
     display: flex;
-    width: 50%;
     padding-left: 0;
     justify-content: space-around;
+    list-style: none;
+    
 }
-
-.manage__order-search input {
+.manage__order-search-li{
+    display: inline-block;
+    margin: 0 10px;
+}
+.manage__order-search-li .manage__order-search-input {
     width: 130px;
     height: 25px;
     border-radius: 3px;
     border-color: #FE9126;
 }
 
-.manage__order-search input::placeholder {
+.manage__order-search-li .manage__order-search-input::placeholder {
     text-align: center;
 }
 
-.manage__order-search button {
+.manage__order-search-li button {
     border-color: #FE9126;
     border-radius: 3px;
+    height: 30px;
     cursor: pointer;
     background-color: white;
     color: #FE9126;
 }
 
-.manage__order-search button:hover {
+.manage__order-search-li button:hover {
     background-color: #FE9126;
     color: white;
 }
 
-.manage__order-search i {
+.manage__order-search-li i {
     padding-top: 15px;
     color: #FE9126;
 }
 
-.manage__order-search span {
+.manage__order-search-li span {
     color: #FE9126;
     font-size: 1.1rem;
     padding-right: 15px;

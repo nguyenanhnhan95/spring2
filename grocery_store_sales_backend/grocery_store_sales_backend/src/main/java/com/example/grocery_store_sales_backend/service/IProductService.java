@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface IProductService {
     Optional<Product> getProduct(Long id);
-    Page<IProductProjection> getProducts(Pageable pageable,Integer type,String search,Integer searchStatus);
+    Page<IProductProjection> getProducts(Pageable pageable,Integer type,String search,Integer searchStatus,Integer sort);
     Page<IProductProjection> getAllProductByType(int id,Pageable pageable);
     boolean updateNumberOfProductSold(int number,Long idProduct);
 

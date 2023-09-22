@@ -34,7 +34,9 @@ public class PaymentController {
     private ICartService cartService;
     @Autowired
     private IOrderService orderService;
-    @Autowired IOrderDetailService orderDetailService;
+    @Autowired
+    IOrderDetailService orderDetailService;
+
     @PostMapping("")
     public ResponseEntity<?> create(@PathParam("total") Long total)
             throws UnsupportedEncodingException {
@@ -109,41 +111,83 @@ public class PaymentController {
     }
 
     @PreAuthorize("hasRole('ROLE_USER')  or hasRole('ROLE_ADMIN')")
-    @PostMapping("/ordered")
-    public ResponseEntity<?> addPaymentOrder(@PathParam("total")String total){
+    @PostMapping("/paid")
+    public ResponseEntity<?> addPaymentOrder(@PathParam("total") String total, @PathParam("accumulate") String accumulate) {
 
+        try {
+            double accumulated = Math.round(Double.parseDouble(total) / 100000000);
+            System.out.println("tich luy" + accumulated);
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
             Users user = userService.getUserByEmail(email).get();
-            user.setAccumulatedPoints(user.getAccumulatedPoints()+ Double.parseDouble(total)*0.00002);
+            user.setAccumulatedPoints(user.getAccumulatedPoints() + accumulated - Double.parseDouble(accumulate));
             List<CartDetail> cartDetails = cartService.getCarts(user.getId());
             StatusOrder statusOrder = statusOrderService.findByIdStatusOrder(1).get();
             Date date = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String formattedDate = dateFormat.format(date);
 
 
-            Order order = new Order(formattedDate, "", false, statusOrder, user);
+            Order order = new Order(formattedDate, "", false,Long.parseLong(total)/100, statusOrder, user);
             Order orderSave = orderService.saveOrder(order);
-            int size=cartDetails.size();
-            for (int i = 0; i <size ; i++) {
-                Product product=cartDetails.get(i).getProduct();
-                if(cartDetails.get(i).getNumberCart()>product.getQualityProduct()){
+            int size = cartDetails.size();
+            for (int i = 0; i < size; i++) {
+                Product product = cartDetails.get(i).getProduct();
+                if (cartDetails.get(i).getNumberCart() > product.getQualityProduct()) {
                     continue;
-                }else {
-                    productService.updateNumberOfProductSold(cartDetails.get(i).getNumberCart(),product.getId());
+                } else {
+                    productService.updateNumberOfProductSold(cartDetails.get(i).getNumberCart(), product.getId());
                 }
-                OrderDetail orderDetail =new OrderDetail(cartDetails.get(i).getNumberCart(),false,orderSave,product);
+                OrderDetail orderDetail = new OrderDetail(cartDetails.get(i).getNumberCart(), false, orderSave, product);
                 orderDetailService.saveOrderDetail(orderDetail);
             }
-            if(!cartService.deleteCardsUser(user.getId())){
+            if (!cartService.deleteCardsUser(user.getId())) {
 
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            };
-//        }catch (Exception e){
-//            System.out.println("loi");
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
+            }
+            ;
+        } catch (Exception e) {
+            System.out.println("loi");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')  or hasRole('ROLE_ADMIN')")
+    @PostMapping("/paid-immediately")
+    public ResponseEntity<?> addPaymentImmediately(@PathParam("id") String id, @PathParam("total") String total) {
+
+        try {
+            Product product = productService.getProduct(Long.parseLong(id)).get();
+            if (!productService.getProduct(Long.parseLong(id)).isPresent()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            }
+            Integer numberProduct = Math.toIntExact(Integer.parseInt(total) / (product.getPriceProduct()*100));
+            double accumulated = Math.round(Double.parseDouble(total) / 100000000);
+            System.out.println("tich luy" + accumulated);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
+            Users user = userService.getUserByEmail(email).get();
+            user.setAccumulatedPoints(user.getAccumulatedPoints() + accumulated);
+            StatusOrder statusOrder = statusOrderService.findByIdStatusOrder(1).get();
+            Date date = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = dateFormat.format(date);
+
+
+            Order order = new Order(formattedDate, "", false,Long.parseLong(total)/100, statusOrder, user);
+            Order orderSave = orderService.saveOrder(order);
+            productService.updateNumberOfProductSold(numberProduct, product.getId());
+
+            OrderDetail orderDetail = new OrderDetail(numberProduct, false, orderSave, product);
+            orderDetailService.saveOrderDetail(orderDetail);
+
+
+        } catch (Exception e) {
+            System.out.println("loi");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

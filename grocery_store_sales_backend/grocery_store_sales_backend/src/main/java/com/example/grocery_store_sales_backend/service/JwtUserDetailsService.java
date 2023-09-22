@@ -74,6 +74,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         users.setGenderUser(userDto.getGenderUser());
         users.setIdCardUser(userDto.getIdCardUser());
         users.setPhoneUser(userDto.getPhoneUser());
+        users.setAccumulatedPoints(0.0);
         users.setFlagUser(false);
         if(userDto.getImgUser().equals("")){
             users.setImgUser("https://facebookninja.vn/wp-content/uploads/2023/06/anh-dai-dien-mac-dinh-zalo.jpg");

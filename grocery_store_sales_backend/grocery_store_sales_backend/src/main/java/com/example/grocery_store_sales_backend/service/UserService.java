@@ -15,4 +15,9 @@ public class UserService implements IUserService{
     public Optional<Users> getUserByEmail(String email) {
         return userRepository.findByEmailUser(email);
     }
+
+    @Override
+    public Optional<Users> getUserById(Integer id) {
+        return userRepository.findById(id);
+    }
 }

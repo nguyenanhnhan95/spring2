@@ -11,6 +11,7 @@ import OrderCustomer from './components/OrderCustomer';
 import CartCustomer from './components/CartCustomer';
 import Login from './components/Login';
 import { createContext, useContext } from 'react';
+import NotFound from './components/NotFound';
 
 
 function App() {
@@ -27,6 +28,8 @@ function App() {
           <Route path={`/register`} element={ <Register />}/>
           <Route path={`/manage-order`} element={<ManageOrder/>}/>
           <Route path={`/order-customer/:id`} element={<OrderCustomer/>}/>
+          <Route path={`/order-customer`} element={<OrderCustomer/>}/>
+          <Route path={`/not-found`} element={<NotFound/>}/>
         </Routes>
         <Footer />
       </BrowserRouter>

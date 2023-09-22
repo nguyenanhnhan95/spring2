@@ -1,6 +1,6 @@
 import axios from "axios";
-export const getProductsDB=async(page,type,search,searchStatus)=>{
-    const response = await axios.get(`http://localhost:8080/products/?page=${page}&type=${type}&search=${search}&searchStatus=${searchStatus}`)
+export const getProductsDB=async(page,type,search,searchStatus,sort)=>{
+    const response = await axios.get(`http://localhost:8080/products/?page=${page}&type=${type}&search=${search}&searchStatus=${searchStatus}&sort=${sort}`)
     return response.data;
 }
 export const getProductDB=async(id)=>{

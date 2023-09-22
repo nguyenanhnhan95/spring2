@@ -1,6 +1,9 @@
 package com.example.grocery_store_sales_backend.service;
 
 import com.example.grocery_store_sales_backend.model.CartDetail;
+import com.example.grocery_store_sales_backend.model.Order;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,4 +17,5 @@ public interface ICartService {
 
     boolean updateCard(CartDetail cartDetail);
     boolean deleteCardsUser(Integer idUser);
+
 }

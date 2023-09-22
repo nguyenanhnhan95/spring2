@@ -22,25 +22,26 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Page<IProductProjection> getProducts(Pageable pageable, Integer type, String search, Integer searchStatus) {
-        if (type == 0) {
+    public Page<IProductProjection> getProducts(Pageable pageable, Integer type, String search, Integer searchStatus,Integer sort) {
+        if(sort==0){
             switch (searchStatus) {
-                case 0:
-                    return productRepository.searchNameProduct(pageable, search);
                 case 1:
-                    return productRepository.searchPopularProduct(pageable);
+                    return productRepository.searchPopularProduct(type,search,pageable);
                 case 2:
-                    return productRepository.searchNewProduct(pageable);
+                    return productRepository.searchNewProduct(type,search,pageable);
                 case 3:
-                    return productRepository.searchTopSaleProduct(pageable);
+                    return productRepository.searchTopSaleProduct(type,search,pageable);
                 default:
-                    return productRepository.searchNameProduct(pageable, search);
+                    return productRepository.searchNameProduct(type,search,pageable);
             }
-        } else {
-            return productRepository.getAllProductByType(type,pageable);
+        }else if(sort==1){
+            return productRepository.sortAscendingPrice(search,type,pageable);
+        }else {
+            return productRepository.sortDecreasePrice(search,type,pageable);
         }
 
-}
+
+    }
 
     @Override
     public Page<IProductProjection> getAllProductByType(int id, Pageable pageable) {
@@ -49,9 +50,9 @@ public class ProductService implements IProductService {
 
     @Override
     public boolean updateNumberOfProductSold(int number, Long idProduct) {
-        if(productRepository.updateQualityProductSold(number,idProduct)!=0){
+        if (productRepository.updateQualityProductSold(number, idProduct) != 0) {
             return true;
-        }else {
+        } else {
 
             return false;
         }

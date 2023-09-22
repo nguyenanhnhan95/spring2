@@ -7,6 +7,7 @@ import numeral from 'numeral';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, getCart } from '../actions/cartActions';
 import { paymentOrderDB } from '../service/PaymentService';
+import { ToastContainer, toast } from 'react-toastify';
 function CartCustomer() {
   const [cards, setCards] = useState([])
 
@@ -50,6 +51,7 @@ function CartCustomer() {
         console.log(data)
       }
     }
+    console.log(data)
     updateCartsDB(data).then(() => {
       getCarts()
 
@@ -58,10 +60,13 @@ function CartCustomer() {
     })
     dispatch(addToCart({ flagCart: flagOfCart }))
   }
+  console.log(accumulate);
   const deleteProductInCart = (value) => {
     deleteCardByIdDB(value, headers).then(() => {
-      dispatch(addToCart({ flagCart: flagOfCart }))
       getCarts()
+      setTimeout(() => {
+        dispatch(addToCart({ flagCart: flagOfCart }))
+      }, 100);
     }).catch(() => {
       alert("loi")
     })
@@ -79,12 +84,36 @@ function CartCustomer() {
   }, [cards]);
 
 
-  const handlePayMent=(total)=>{
-    paymentOrderDB(total).then((data)=>{
-      window.location.href = data;
-    }).catch(()=>{
-      alert("loi")
-    })
+  const handlePayMent = (total, point) => {
+    const size = cards.length;
+    let flagCheckPayment = true;
+    console.log(cards[0].product.qualityProduct)
+    for (let i=0; i < size; i++) {
+      if (cards[i].numberCart > cards[i].product.qualityProduct) {
+        toast.error(`Sản phẩm ${cards[i].product.brandProduct} không đủ !`, {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        flagCheckPayment = false;
+        console.log(cards[i].product.brandProduct)
+      }
+      
+    }
+    if (flagCheckPayment) {
+      paymentOrderDB(total).then((data) => {
+        localStorage.setItem("point", point)
+        localStorage.setItem("typePayment", "0")
+        window.location.href = data;
+      }).catch(() => {
+        alert("loi")
+      })
+    }
   }
 
 
@@ -171,7 +200,7 @@ function CartCustomer() {
 
                   </>
                 ) : (
-                  null
+                  <></>
                 )}
                 <hr />
 
@@ -187,28 +216,28 @@ function CartCustomer() {
                       <div className="card_customer-left-payment-name">Tổng tiền</div>
 
                       <div className="card_customer-left-payment-total-price">{numeral(total - cards[0].users.accumulatedPoints * 10000).format('00,0 đ')}VND</div>
-                      
+
                     </div>
                     <div className="card_customer-left-payment-total button_payment_total">
 
-                        <button type='button' onClick={() => handlePayMent(total - cards[0].users.accumulatedPoints * 10000)}>Mua hàng</button>
-                      </div>
+                      <button type='button' onClick={() => handlePayMent(total - cards[0].users.accumulatedPoints * 10000, cards[0].users.accumulatedPoints)}>Mua hàng</button>
+                    </div>
                   </>
                 ) :
                   (
                     <>
-                    <div className="card_customer-left-payment-total">
+                      <div className="card_customer-left-payment-total">
 
-                      <div className="card_customer-left-payment-name">Tổng tiền</div>
+                        <div className="card_customer-left-payment-name">Tổng tiền</div>
 
-                      <div className="card_customer-left-payment-total-price">{numeral(total).format('00,0 đ')}VND</div>
-                     
-                    </div>
-                     <div className="card_customer-left-payment-total button_payment_total">
+                        <div className="card_customer-left-payment-total-price">{numeral(total).format('00,0 đ')}VND</div>
 
-                     <button type='button' onClick={() => handlePayMent(total)}>Mua hàng</button>
-                   </div>
-                   </>
+                      </div>
+                      <div className="card_customer-left-payment-total button_payment_total">
+
+                        <button type='button' onClick={() => handlePayMent(total, 0)}>Mua hàng</button>
+                      </div>
+                    </>
                   )
                 }
               </div>
@@ -219,6 +248,18 @@ function CartCustomer() {
 
         </div>
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   )
 }

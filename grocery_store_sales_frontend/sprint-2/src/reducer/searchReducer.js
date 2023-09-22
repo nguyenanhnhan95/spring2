@@ -1,5 +1,5 @@
 const initialValue={
-    search: [0,0,"",0],
+    search: [0,0,"",0,0],
     flagSearch:true
 }
 export const searchReducer=(state=initialValue,action)=>{

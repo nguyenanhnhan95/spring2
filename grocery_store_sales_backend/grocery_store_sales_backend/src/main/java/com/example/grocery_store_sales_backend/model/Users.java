@@ -20,6 +20,7 @@ public class Users {
     private String idCardUser;
     @Column(nullable = false)
     private String addressUser;
+    @Column(columnDefinition = "double default 0.0")
     private Double accumulatedPoints;
     @Column(nullable = false)
     private String imgUser;

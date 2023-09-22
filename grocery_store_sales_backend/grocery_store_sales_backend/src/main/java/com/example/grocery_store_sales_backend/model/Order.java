@@ -13,6 +13,8 @@ public class Order {
     private String noteOrder;
     @Column(columnDefinition = "int default 0")
     private boolean flagOrder;
+    @Column(columnDefinition = "bigint default 0")
+    private Long totalPrice;
     @ManyToOne
     private StatusOrder statusOrder;
     @ManyToOne
@@ -30,11 +32,28 @@ public class Order {
         this.users = users;
     }
 
-    public Order(String dateOrder, String noteOrder, boolean flagOrder, StatusOrder statusOrder, Users users) {
+    public Order(String dateOrder, String noteOrder, boolean flagOrder, Long totalPrice, StatusOrder statusOrder, Users users) {
         this.dateOrder = dateOrder;
         this.noteOrder = noteOrder;
         this.flagOrder = flagOrder;
+        this.totalPrice = totalPrice;
         this.statusOrder = statusOrder;
+        this.users = users;
+    }
+
+    public Long getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Long totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Users getUsers() {
+        return users;
+    }
+
+    public void setUsers(Users users) {
         this.users = users;
     }
 

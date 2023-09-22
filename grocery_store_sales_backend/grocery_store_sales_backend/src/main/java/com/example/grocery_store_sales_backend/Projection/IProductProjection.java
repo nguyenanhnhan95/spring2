@@ -7,4 +7,6 @@ public interface IProductProjection {
     Long getPriceProduct();
     Double getBonusSale();
     Long getTotalSold();
+    String getReleaseDate();
+    Long getQualityProduct();
 }

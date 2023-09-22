@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import '../css/detail-product.css'
 import '../css/home.css'
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
@@ -9,6 +9,10 @@ import numeral from 'numeral';
 import { getCartsByEmailUserDB, saveCartsDB, saveCartsProductDetailDB, updateCartsDB } from '../service/CardService';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, getCart } from '../actions/cartActions';
+import { type } from '@testing-library/user-event/dist/type';
+import { paymentOrderDB } from '../service/PaymentService';
+import Swal from 'sweetalert2';
+
 function ProductDetail() {
   const pram = useParams();
   const [product, setProduct] = useState(null)
@@ -17,6 +21,7 @@ function ProductDetail() {
   const [products, setProducts] = useState([])
   const [numberProduct, setNumberProduct] = useState(1)
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const flagOfCart = useSelector(getCart)
   const headers = {
     'Authorization': `Bearer ${localStorage.getItem("token")}`,
@@ -26,63 +31,142 @@ function ProductDetail() {
   useEffect(() => {
     getProduct()
     getImgProduct();
-  }, [])
+  }, [pram.id,numberProduct])
 
   const getProduct = () => {
     getProductDB(pram.id).then((data) => {
       getProductsAllDB(data.typeProduct.id).then((data) => {
         console.log(data.content);
         setProducts(data.content)
-
       })
       console.log(data);
       setProduct(data)
     })
       .catch(() => {
-        alert("loi")
+        navigate("/not-found")
       })
   }
-  const handleCart = (value,number) => {
-    console.log(value)
-    console.log(localStorage.getItem("id"))
-    getCartsByEmailUserDB(localStorage.getItem("id")).then((data) => {
-      console.log(data)
-      let index;
-      if (data.length === 0) {
-        index = -1;
-      } else {
-        index = data.findIndex(p => p.product.id === value.id)
-      }
-      if (index >= 0) {
-        if (number > value.qualityProduct) {
-          return 0;
-        } else {
-          if(number==1){
-            data[index].numberCart +=1;
-          }else{
-            data[index].numberCart = number;
-          }
-          
-          console.log(data[index])
-          updateCartsDB(data[index]).then(() => {
-            console.log(data)
+  const handlePaymentImmediate = (product) => {
+    if (product === null) {
+      return ""
+    }
+    if (localStorage.getItem("nameUser") == null) {
+      Swal.fire({
+        icon: "warning",
+        timer: 1500,
+        title: "Bạn cần đăng nhập .",
+        showCancelButton: true,
+        confirmButtonText: "Có",
+        cancelButtonText: "Không",
+      }).then((res) => {
+        if (res.isConfirmed) {
+          navigate("/login")
+        } else if (res.dismiss == Swal.DismissReason.cancel) { }
+      })
+    } else {
+      if (localStorage.getItem("nameRole") === "ROLE_USER") {
+        if (0 < numberProduct && numberProduct < product.qualityProduct) {
+          localStorage.setItem("idProduct", product.id)
+          localStorage.setItem("typePayment", "1")
+          paymentOrderDB(product.priceProduct * numberProduct).then((data) => {
+            window.location.href = data;
           })
-
         }
-
-      } else {
-        console.log("ccc")
-        saveCartsProductDetailDB(value.id,number, headers).then(() => {
-
-          console.log(data.length)
-
-        })
       }
-      setTimeout(() => {
-        dispatch(addToCart({ flagCart: flagOfCart }))
-      }, 100);
+    }
+  }
+ 
 
-    })
+  useEffect(() => {
+    document.title = "Chi tiết sản phẩm "
+  }, [])
+  const handleCart = (value, number) => {
+    switch (localStorage.getItem("nameRole")) {
+      case null:
+        Swal.fire({
+          icon: "warning",
+          timer: 1500,
+          title: "Bạn cần đăng nhập .",
+          showCancelButton: true,
+          confirmButtonText: "Có",
+          cancelButtonText: "Không",
+        }).then((res) => {
+          if (res.isConfirmed) {
+            navigate("/login")
+          } else if (res.dismiss == Swal.DismissReason.cancel) { }
+        })
+        break;
+      case "ROLE_USER":
+        getCartsByEmailUserDB(localStorage.getItem("id")).then((data) => {
+          console.log(data)
+          let index;
+          if (data.length === 0) {
+            index = -1;
+          } else {
+            index = data.findIndex(p => p.product.id === value.id)
+            console.log(index)
+          }
+          if (index >= 0) {
+            
+            if(data[index].numberCart===product.qualityProduct){
+             
+              Swal.fire({
+                text: "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này ?",
+                icon: "error",
+                timer: 2000
+              })
+              return 0;
+            }
+            if (number > value.qualityProduct) {
+              return 0;
+            } else {           
+                if (data[index].numberCart + number > product.qualityProduct) {
+                  Swal.fire({
+                    text: "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này ?",
+                    icon: "error",
+                    timer: 2000
+                  })
+                } else {
+                  data[index].numberCart += number;
+                  console.log(data[index])
+                  Swal.fire({
+                    text: "Bạn đã thêm giỏ hàng thành công",
+                    icon: "success",
+                    timer: 2000
+                  })
+                }           
+              updateCartsDB(data[index]).then(() => {
+              }).catch(()=>{
+                console.log("loi")
+              })
+
+            }
+          } else {
+            saveCartsProductDetailDB(value.id, number, headers).then(() => {
+              Swal.fire({
+                text: "Bạn đã thêm giỏ hàng thành công",
+                icon: "success",
+                timer: 2000
+              })
+            }).catch(()=>{
+              console.log("loi")
+            })
+          }
+        }    
+        )
+        setNumberProduct(1);
+        setTimeout(() => {
+          dispatch(addToCart({ flagCart: flagOfCart }))
+        }, 100);
+        break;
+      default:
+        Swal.fire({
+          icon: "warning",
+          timer: 1500,
+          title: "Bạn sản phẩm không thể đặt hàng .",
+        })
+    }
+
   }
   const handleButtonCart = (number) => {
 
@@ -98,6 +182,8 @@ function ProductDetail() {
       setImgProduct(data[0].imgProducts)
       console.log(data)
       setImgProducts(data)
+    }).catch(()=>{
+      navigate("/not-found")
     })
   }
   const changeImgProduct = (index) => {
@@ -175,7 +261,7 @@ function ProductDetail() {
                   15 <span className>Đánh giá</span>
                 </div>
                 <div className="detail__product__right-item-sale-number">
-                  15 <span>Đã Bán</span>
+                  {product.totalSold}<span>Đã Bán</span>
                 </div>
               </li>
               <li className="detail__product__right-item detail__product__right-item-price">
@@ -217,19 +303,40 @@ function ProductDetail() {
                     <span> Sản phẩm đã hết hàng </span>
                   ) : (
                     <>
-                      <button type='button' className="button-number-item" onClick={()=>handleButtonCart(numberProduct-1)}>-</button>
-                      <input type="number" readOnly placeholder={numberProduct} />
+                      <button type='button' className="button-number-item" onClick={() => handleButtonCart(numberProduct - 1)}>-</button>
+                      <input type="number" style={{"textAlign":"center"}}  min={1} max={product.qualityProduct} value={numberProduct}  onChange={
+                        (e)=>{
+                          if(e.target.value>product.qualityProduct){
+                            setNumberProduct(product.qualityProduct)
+                          }else{
+                            setNumberProduct(e.target.value)
+                          }
+                        }
+                        
+                      
+                        } placeholder={numberProduct} />
                       <button type='button' className="button-number-item" onClick={() => handleButtonCart(numberProduct + 1)}>+</button>
-                      <span>{product.qualityProduct-numberProduct} Sản phẩm còn lại</span>
+                      <span>{product.qualityProduct } Sản phẩm còn lại</span>
                     </>
                   )}
 
                 </div>
               </li>
               {product.qualityProduct !== 0 ? (
+
                 <li className="detail__product__right-item detail__product__right-item-content">
-                  <button className="detail__product__right-item-cart-shopping" onClick={() => handleCart(product,numberProduct)}><i className="fa-solid fa-cart-shopping" />Thêm Vào Giỏ Hàng</button>
-                  <button className="detail__product__right-item-pay">Mua Ngay</button>
+                  {localStorage.getItem("nameRole") !== "ROLE_ADMIN" ? (
+                    <>
+                      <button className="detail__product__right-item-cart-shopping" onClick={() => handleCart(product, numberProduct)}><i className="fa-solid fa-cart-shopping" />Thêm Vào Giỏ Hàng</button>
+                      <button className="detail__product__right-item-pay" onClick={() => handlePaymentImmediate(product)}>Mua Ngay</button>
+                    </>
+                  ) : (
+                    <>
+                      <button className="detail__product__right-item-cart-shopping" ><i className="fa-solid fa-cart-shopping" />Thêm Vào Giỏ Hàng</button>
+                      <button className="detail__product__right-item-pay" >Mua Ngay</button>
+                    </>
+                  )}
+
 
                 </li>
               ) : (
@@ -319,15 +426,21 @@ function ProductDetail() {
             <Carousel breakPoints={breakPoints} responsive={responsive}>
               {products && products.map((product) => (
                 <div key={product.id} class="card-detail">
-                  <img src={product.imgProduct} />
+                  <Link style={{"textDecoration":"none"}} to={`/productDetail/${product.id}`}>
+                  <img src={product.imgProduct} onClick={()=>{window.scroll(0,0)}}/>
                   <h4>{product.brandProduct}</h4>
+                  </Link>
                   <div class="price-detail">
                     {product.bonusSale !== 0 && (
                       <del>{numeral(product.priceProduct).format('00,0 đ')}</del>
                     )}
                     <span>{numeral(product.priceProduct * (1 - product.bonusSale)).format('00,0 đ')}VND</span></div>
+                  {product.qualityProduct !== 0 ? (
+                    <button type='button' onClick={() => handleCart(product, 1)}>Thêm giỏ hàng</button>
+                  ) : (
+                    <button type='button' >Thêm giỏ hàng</button>
+                  )}
 
-                  <button type='button' onClick={()=>handleCart(product,1)}>Thêm giỏ hàng</button>
                 </div>
               ))}
             </Carousel>

@@ -7,6 +7,7 @@ import { AccountService } from '../service/AccountService';
 import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
 import { LOGIN } from '../actions/loginAction';
+import { useEffect } from 'react';
 function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -37,6 +38,9 @@ function Login() {
       })
     })
   }
+  useEffect(()=>{
+    document.title="Đăng nhập"
+  },[])
   return (
     <>
       <div className="container__login">
@@ -79,7 +83,7 @@ function Login() {
 
               <div className="login__section-footer">
                 <p>Quên mật khẩu</p>
-                <p>Đăng Ký</p>
+                <Link to={`/register`} style={{"textDecoration":"none"}}><p>Đăng Ký</p></Link>
               </div>
               <Link to={`/`}><button className="login__section-button-return" type="button">Quay lại</button></Link>
             </div>

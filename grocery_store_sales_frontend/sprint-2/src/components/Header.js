@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState,memo } from "react";
+import React, { createContext, useEffect, useState, memo } from "react";
 import Login from "./Login";
 import { Link, useLocation, useNavigate, useSearchParams, } from "react-router-dom";
 import '../css/header.css'
@@ -14,26 +14,27 @@ function Header() {
     const [search, setSearch] = useState("")
     const [user, setUser] = useState(null)
     const [carts, setCarts] = useState([])
-    const dispatch=useDispatch()
-    const flagSearch=useSelector(getSearchStatus)
-     let count=0;
+    const dispatch = useDispatch()
+    const flagSearch = useSelector(getSearchStatus)
+    const dataSearch = useSelector(getSearch)
+    let count = 0;
 
-    const flagOfCart=useSelector(getCart)
+    const flagOfCart = useSelector(getCart)
     console.log(flagOfCart)
 
     useEffect(() => {
-     
-    
-        if(headers.Authorization!='Bearer null'){
+
+
+        if (headers.Authorization != 'Bearer null') {
             getUserByEmail()
-        }      
-    }, [flagOfCart,location])
-    const headers={
+        }
+    }, [flagOfCart, location])
+    const headers = {
         'Authorization': `Bearer ${localStorage.getItem("token")}`,
     }
     console.log(localStorage.getItem("token"))
     console.log(headers)
-   
+
     const getUserByEmail = () => {
         getUserByEmailDB(headers).then((data) => {
             setUser(data)
@@ -42,16 +43,16 @@ function Header() {
             getCartsByEmailUserDB(data.id).then((data) => {
                 console.log(data)
                 console.log("vu")
-                const car=data
+                const car = data
                 car.sort((a, b) => b.id - a.id);
                 setCarts(car)
                 console.log(count)
                 console.log(data)
-            }).catch(()=>{
+            }).catch(() => {
                 setCarts([])
             })
-            
-        }).catch(()=>{
+
+        }).catch(() => {
             navigate("/")
         })
     }
@@ -65,30 +66,45 @@ function Header() {
         console.log(localStorage.getItem("email"))
         navigate("/")
     }
-  
-    const handleSearch=(value)=>{
-        dispatch(searchListProduct(value))
-        
+    const handleEnter = (e) => {
+        const key = e.keyCode;
+        if (key === 13) {
+            handleSearch()
+        }
     }
-    const deleteCard=(idCard)=>{
-       deleteCardByIdDB(idCard,headers).then(()=>{
-        getCartsByEmailUserDB(user.id).then((data) => {
-            
-            setCarts(data)
-            console.log(data)
-        }).catch(()=>{
-            setCarts([])
+
+    const handleSearch = () => {
+        const valueOne = dataSearch;
+        valueOne[0] = 0;
+        valueOne[2] = search.trim();
+        dispatch(searchListProduct({ search: valueOne, flagSearch: flagSearch }))
+        console.log(valueOne)
+    }
+    const handleStatusSearch = (value) => {
+        const valueOne = dataSearch;
+        valueOne[0] = 0;
+        valueOne[1] = value * 1;
+        dispatch(searchListProduct({ search: valueOne, flagSearch: flagSearch }))
+    }
+    const deleteCard = (idCard) => {
+        deleteCardByIdDB(idCard, headers).then(() => {
+            getCartsByEmailUserDB(user.id).then((data) => {
+
+                setCarts(data)
+                console.log(data)
+            }).catch(() => {
+                setCarts([])
+            })
+        }).catch(() => {
+            navigate("/")
         })
-       }).catch(()=>{
-        navigate("/")
-       })
     }
-    if(headers.Authorization!='Bearer null'){
-        if(user==null){
+    if (headers.Authorization != 'Bearer null') {
+        if (user == null) {
             return null;
         }
     }
-    if( carts==null){
+    if (carts == null) {
         return null;
     }
     return (
@@ -161,12 +177,34 @@ function Header() {
                                                 <li className="header__top-sub-login-item">
                                                     <hr />
                                                 </li>
-                                                <Link style={{ textDecoration: 'none' }} to={`/order-customer/${user.id}`}><li className="header__top-sub-login-item">
-                                                    <i className="fa-solid fa-cart-shopping" /><span className="header__top-sub-login-profile">Đơn hàng</span>
-                                                </li></Link>
-                                                <li className="header__top-sub-login-item">
-                                                    <hr />
-                                                </li>
+                                                {localStorage.getItem("nameRole") === "ROLE_USER" && (
+                                                    <>
+                                                        <Link style={{ textDecoration: 'none' }} to={`/order-customer/${user.id}`}><li className="header__top-sub-login-item">
+                                                            <i className="fa-solid fa-cart-shopping" /><span className="header__top-sub-login-profile">Đơn hàng</span>
+                                                        </li></Link>
+                                                        <li className="header__top-sub-login-item">
+                                                            <hr />
+                                                        </li>
+                                                    </>
+                                                )}
+                                                {localStorage.getItem("nameRole") === "ROLE_ADMIN" && (
+                                                    <>
+                                                        <Link style={{ textDecoration: 'none' }} to={`/manage-order`}><li className="header__top-sub-login-item">
+                                                            <i class="fa-solid fa-bag-shopping"></i><span className="header__top-sub-login-profile">Quản lý đơn hàng</span>
+                                                        </li></Link>
+                                                        <li className="header__top-sub-login-item">
+                                                            <hr />
+                                                        </li>
+                                                        <Link style={{ textDecoration: 'none' }} ><li className="header__top-sub-login-item">
+                                                            <i className="fa-solid fa-file-pen" /><span className="header__top-sub-login-profile">Quản lý khách hàng</span>
+                                                        </li></Link>
+                                                        <li className="header__top-sub-login-item">
+                                                            <hr />
+                                                        </li>
+                                                    </>
+                                                )}
+
+
                                                 <li className="header__top-sub-login-item" onClick={() => logoutAccount()}>
                                                     <i className="fa-solid fa-right-from-bracket" /><span className="header__top-sub-login-profile">Đăng xuất</span>
                                                 </li>
@@ -179,7 +217,7 @@ function Header() {
                                         <li className="header__top-item header__content--cart">
 
                                             {/* no cart */}
-                                            { carts.length === 0 ? (
+                                            {carts.length === 0 ? (
                                                 <div class="header__cart__wrap">
                                                     <i class="fa-solid fa-bag-shopping fa-xl">
                                                     </i>
@@ -208,14 +246,14 @@ function Header() {
                                                                     <div className="header__cart-list-cart-item-product">
                                                                         <div className="header__cart-list-cart-item-product-item">
                                                                             <div className="header__cart-list-cart-item-product-name">
-                                                                            {cart.product.brandProduct}
+                                                                                {cart.product.brandProduct}
                                                                             </div>
                                                                         </div>
                                                                         <div className="header__cart-list-cart-item-product-item">
                                                                             <div className="header__cart-list-cart-item-product-price">
-                                                                                <span className="header__cart-list-cart-item-product-price-money">{cart.product.priceProduct*(1-cart.product.bonusSale)}</span>
+                                                                                <span className="header__cart-list-cart-item-product-price-money">{cart.product.priceProduct * (1 - cart.product.bonusSale)}</span>
                                                                                 <span className="header__cart-list-cart-item-product-price-quality">x {cart.numberCart}</span>
-                                                                                <p onClick={()=>deleteCard(cart.id)}>xóa</p>
+                                                                                <p onClick={() => deleteCard(cart.id)}>xóa</p>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -240,15 +278,18 @@ function Header() {
                         <div className="grid-content">
                             <div className="header__content">
                                 <ul className="header__content--list">
-                                    <li className="header__content-item  "><img className="header__content-item--logo" src="../img/logo.jpg" /></li>
+                                    <Link style={{ "textDecoration": "none" }} to={"/"} onClick={() => dispatch(searchListProduct({
+                                        search: [0, 0, "", 0, 0],
+                                        flagSearch: flagSearch
+                                    }))}><li className="header__content-item  "><img className="header__content-item--logo" src="../img/logo.jpg" /></li></Link>
                                 </ul>
                                 <ul className="header__content--list">
                                     <li className="header__content-item header__content-item--title">Bách Hóa Online</li>
                                 </ul>
                                 <ul className="header__content--list">
                                     <li className="header__content-item header__content-item--search">
-                                        <input className="header__content-item--input" onChange={e => setSearch(e.target.value)} placeholder="Tìm kiếm" />
-                                        <div className="header__content-item--search--button"><i onClick={() => handleSearch({search:[0,0,search,0],flagSearch:flagSearch})} className="fa-solid fa-magnifying-glass" />
+                                        <input className="header__content-item--input" value={search} onKeyDown={(e) => handleEnter(e)} onChange={e => setSearch(e.target.value)} placeholder="Tìm kiếm" />
+                                        <div className="header__content-item--search--button" onClick={() => handleSearch()}><i className="fa-solid fa-magnifying-glass" />
                                         </div>
                                     </li>
                                 </ul>
@@ -257,25 +298,15 @@ function Header() {
                         <div className="grid-navbar">
                             <div className="header__navbar">
                                 <ul className="header__navbar--list">
-                                    <Link to={`/`}><li className="header__navbar-item " onClick={() => handleSearch({search:[0,0,"",0],flagSearch:flagSearch})}>Trang Chủ</li></Link>
+                                    {/* <Link to={`/`}><li className="header__navbar-item " onClick={() => handleStatusSearch(0)}>Trang Chủ</li></Link> */}
                                     {/*                        admin*/}
-                                    {localStorage.getItem("nameRole") === "ROLE_ADMIN" ? (
-                                        <li className="header__navbar-item header__navbar-item-manage">Quản lý
-                                            <ul className="sub_header__navbar-item-list">
-                                                <Link style={{ textDecoration: 'none' }} to={`/manage-order`}><li className="sub_header__navbar-item-list-item"><i className="fa-solid fa-cart-shopping" />Quản lý đơn hàng</li></Link>
-                                                <li className="sub_header__navbar-item-list-item"><hr /></li>
-                                                <li className="sub_header__navbar-item-list-item"><i className="fa-solid fa-file-pen" />Quản lý khách hàng</li>
-                                                <li className="sub_header__navbar-item-list-item"><hr /></li>
-                                                <li className="sub_header__navbar-item-list-item"><i className="fa-solid fa-people-roof" />Quản lý nhân viên</li>
-                                            </ul>
-                                        </li>) : (null)}
-                                    <li className="header__navbar-item " onClick={() => handleSearch({search:[0,1,search,0],flagSearch:flagSearch})}>Bia &amp; Nước
+                                    <li className={`header__navbar-item ${dataSearch[1] === 1 ? 'active' : ''}`} style={dataSearch[1] === 1 ? { background: '#E67E22', color: "white" } : {}} onClick={() => handleStatusSearch(1)}>Bia &amp; Nước
                                     </li>
-                                    <li className="header__navbar-item " onClick={() => handleSearch({search:[0,2,search,0],flagSearch:flagSearch})}>Snack &amp; Bánh kẹo</li>
-                                    <li className="header__navbar-item " onClick={() => handleSearch({search:[0,3,search,0],flagSearch:flagSearch})}>Hóa mỹ phẩm</li>
-                                    <li className="header__navbar-item " onClick={() => handleSearch({search:[0,4,search,0],flagSearch:flagSearch})}>Gạo, thực phẩm khô
+                                    <li className={`header__navbar-item ${dataSearch[1] === 2 ? 'active' : ''}`} style={dataSearch[1] === 2 ? { background: '#E67E22', color: "white" } : {}} onClick={() => handleStatusSearch(2)}>Snack &amp; Bánh kẹo</li>
+                                    <li className={`header__navbar-item ${dataSearch[1] === 3 ? 'active' : ''}`} style={dataSearch[1] === 3 ? { background: '#E67E22', color: "white" } : {}} onClick={() => handleStatusSearch(3)}>Hóa mỹ phẩm</li>
+                                    <li className={`header__navbar-item ${dataSearch[1] === 4 ? 'active' : ''}`} style={dataSearch[1] === 4 ? { background: '#E67E22', color: "white" } : {}} onClick={() => handleStatusSearch(4)}>Gạo, thực phẩm khô
                                     </li>
-                                    <li className="header__navbar-item " onClick={() => handleSearch({search:[0,5,search,0],flagSearch:flagSearch})}>Thực phẩm dinh dưỡng
+                                    <li className={`header__navbar-item ${dataSearch[1] === 5 ? 'active' : ''}`} style={dataSearch[1] === 5 ? { background: '#E67E22', color: "white" } : {}} onClick={() => handleStatusSearch(5)}>Thực phẩm dinh dưỡng
                                     </li>
                                 </ul>
                             </div>

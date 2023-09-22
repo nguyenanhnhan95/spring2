@@ -11,7 +11,11 @@ import { Await, Link, useNavigate, useSearchParams, useParams, useLocation } fro
 import { addToCart, getCart } from "../actions/cartActions";
 import { getCartsByEmailUserDB, getCartsByIdProduct, saveCartsDB, updateCartsDB } from "../service/CardService";
 import { getSearch, getSearchStatus, searchListProduct } from "../actions/searchAction";
+import 'react-toastify/dist/ReactToastify.css';
 import { paidOrderDB } from "../service/PaymentService";
+import { ToastContainer, toast } from "react-toastify";
+
+
 function Home() {
   const [products, setProducts] = useState([])
   const [product, setProduct] = useState()
@@ -22,42 +26,29 @@ function Home() {
   const [search, setSearch] = useState("")
   const location = useLocation();
   const [priceOrder, setPriceOrder] = useState("")
-  const [sort, setSort] = useState("Gía")
   const dispatch = useDispatch();
   const flagOfCart = useSelector(getCart)
   const dataSearch = useSelector(getSearch)
-  console.log(flagOfCart)
- 
-  const flagSearch=useSelector(getSearchStatus)
-  const [paymentParam,setPaymentParam]=useSearchParams()
-  const totalPaid=paymentParam.get("vnp_Amount");
-  console.log(totalPaid)
-  const statusPayment=paymentParam.get("vnp_ResponseCode");
-  console.log(statusPayment)
+  const [sort, setSort] = useState(0)
+
+  if (isNaN(loopCount)) {
+    setLoopCount(1)
+  }
+
+  const flagSearch = useSelector(getSearchStatus)
   const headers = {
     'Authorization': `Bearer ${localStorage.getItem("token")}`,
   }
 
   useEffect(() => {
+
     getProduct()
-  }, [ flagSearch ])
-  const handlePayment=()=>{
-    paidOrderDB(totalPaid,headers).then(()=>{
-      dispatch(addToCart({ flagCart: flagOfCart }))
-      navigate("/")
-    }).catch(()=>{
-      console.log("loi")
-    })
-  }
-  useEffect(()=>{
-    if(statusPayment==="00"){
-      handlePayment()
-    }
-
-  },[statusPayment])
-
+  }, [flagSearch, sort])
+  useEffect(() => {
+    document.title = "Trang chủ"
+  }, [])
   const getProduct = () => {
-    getProductsDB(dataSearch[0], dataSearch[1], dataSearch[2], dataSearch[3]).then((data) => {
+    getProductsDB(dataSearch[0], dataSearch[1], dataSearch[2], dataSearch[3], dataSearch[4]).then((data) => {
       console.log(data.content);
       console.log(search);
       let numberPage = Math.ceil(data.totalElements / 10);
@@ -75,77 +66,154 @@ function Home() {
       })
   }
 
-  console.log("nhan")
+  console.log(dataSearch)
   const transferPage = (value) => {
     if (value >= 0 && value < loopCount) {
       dataSearch[0] = value
 
-      dispatch(searchListProduct({search:dataSearch,flagSearch:flagSearch}));
+      dispatch(searchListProduct({ search: dataSearch, flagSearch: flagSearch }));
     }
   };
   const handleSetSort = (event) => {
     setSort(event.target.value)
-    const pro = products
-    switch (event.target.value) {
-      case "tang":
-        pro.sort((a, b) => a.priceProduct - b.priceProduct);
-        setProducts([...pro]);
-        break;
-      case "giam":
-        pro.sort((a, b) => b.priceProduct - a.priceProduct);
-        setProducts([...pro]);
-        break;
-      default:
-        getProduct()
-    }
+    console.log(event.target.value * 1)
+    console.log(dataSearch)
+    const valueOne = dataSearch;
+    valueOne[0] = 0;
+    valueOne[4] = event.target.value * 1
+    console.log(valueOne)
   }
   const onAddToCart = (value) => {
-    let statusAdd;
-    console.log(localStorage.getItem("id"))
-    getCartsByEmailUserDB(localStorage.getItem("id")).then((data) => {
-      console.log(data)
-      let index;
-      getProductDB(value.id).then((product) => {
-        if (data.length === 0) {
-          index = -1;
-        } else {
-          index = data.findIndex(p => p.product.id === product.id)
-        }
-        if (index >= 0) {
-          data[index].numberCart += 1;
-          console.log(data[index])
-          updateCartsDB(data[index]).then(() => {
-            console.log(data)
-          })
-          statusAdd = 1;
-        } else {
-          console.log("ccc")
-          saveCartsDB(product.id, headers).then(() => {
-
-            console.log(data.length)
-
-          })
-          statusAdd = 0;
-        }
-        setTimeout(() => {
-          dispatch(addToCart({ flagCart: flagOfCart }))
-        }, 100);
-        
+    if (localStorage.getItem("nameUser") == null) {
+      Swal.fire({
+        icon: "warning",
+        timer: 1500,
+        title: "Bạn cần đăng nhập .",
+        showCancelButton: true,
+        confirmButtonText: "Có",
+        cancelButtonText: "Không",
+      }).then((res) => {
+        if (res.isConfirmed) {
+          navigate("/login")
+        } else if (res.dismiss == Swal.DismissReason.cancel) { }
       })
+    } else {
+      let statusAdd;
+      console.log(localStorage.getItem("id"))
+      getCartsByEmailUserDB(localStorage.getItem("id")).then((data) => {
+        console.log(data)
+        let index;
+        getProductDB(value.id).then((product) => {
+          if (data.length === 0) {
+            index = -1;
+          } else {
+            index = data.findIndex(p => p.product.id === product.id)
+          }
+          if (index >= 0) {
+            if (data[index].numberCart === value.qualityProduct) {
+              toast.error('Bạn đặt vượt số lượng hiện có !', {
+                position: "top-right",
+                autoClose: 1000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            } else {
+              data[index].numberCart += 1;
+              console.log(data[index])
+              updateCartsDB(data[index]).then(() => {
+                toast.success(' Bạn đã thêm vào giỏ hàng ' + value.brandProduct + '!', {
+                  position: "top-right",
+                  autoClose: 1000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                });
+              }).catch(()=>{
+                toast.error('Hệ thống bị vui lòng đặt lại !', {
+                  position: "top-right",
+                  autoClose: 1000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+              });
+              })
+              statusAdd = 1;
+            }
 
-    })
+          } else {
+            console.log("ccc")
+            saveCartsDB(product.id, headers).then(() => {
 
+              toast.success(' Bạn đã thêm vào giỏ hàng ' + value.brandProduct + '!', {
+                position: "top-right",
+                autoClose: 1000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+              });
+
+            }).catch(()=>{
+              toast.error('Hệ thống bị vui lòng đặt lại !', {
+                position: "top-right",
+                autoClose: 1000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            })
+            statusAdd = 0;
+          }
+         
+          setTimeout(() => {
+            dispatch(addToCart({ flagCart: flagOfCart }))
+          }, 200);
+
+        })
+
+      })
+    }
   }
-  const handleSearchTypeProduct=(value)=>{
-    dispatch(searchListProduct({search:[0,0,"",value],flagSearch:flagSearch}))
+
+  const handleSearchTypeProduct = (value) => {
+    const valueOne = dataSearch;
+    valueOne[0] = 0;
+    valueOne[4] = 0;
+    valueOne[3] = value * 1
+    setSort(0)
+    dispatch(searchListProduct({ search: valueOne, flagSearch: flagSearch }))
   }
-  if(dataSearch)
+  const isWithinThirtyDays = (date) => {
+    const dateObject = new Date(date);
+    const currentDate = new Date();
+    const differenceInTime = currentDate.getTime() - dateObject.getTime();
+    const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+    return differenceInDays < 30;
+  };
   return (
     <>
       <div className="home">
         <div className="home__header">
           <div className="home__header--content">
-            <div className="home__header--content--item"><i className="fa-solid fa-house" /><span>Trang Chủ</span></div>
+            <Link style={{ "textDecoration": "none" }} to={"/"} onClick={() => dispatch(searchListProduct({
+              search: [0, 0, "", 0, 0],
+              flagSearch: flagSearch
+            }))}><div className="home__header--content--item"><i className="fa-solid fa-house" /><span>Trang Chủ</span></div></Link>
           </div>
         </div>
         <div className="home__content">
@@ -161,13 +229,13 @@ function Home() {
                 <button className="home-filter-item-button" onClick={() => handleSearchTypeProduct(3)} type="button">Bán chạy</button>
               </li>
               <li className="home-filter-item"><select value={sort} onChange={handleSetSort} className="home-filter-item-select">
-                <option value={""}>Giá</option>
-                <option value={"tang"}>Gía: Thấp Đến Cao</option>
-                <option value={"giam"}>Gía: Cao Đến Thấp</option>
+                <option value={0 * 1}>Giá</option>
+                <option value={2 * 1}>Gía: Thấp Đến Cao</option>
+                <option value={1 * 1}>Gía: Cao Đến Thấp</option>
               </select></li>
             </ul>
             <ul className="home-filter-list">
-              <li className="home-filter-item">{page}/{loopCount - 1}</li>
+              <li className="home-filter-item">{dataSearch[0] + 1}/{loopCount}</li>
               <li className="home-filter-item">
                 <button className="home-filter-item-pagination" onClick={() => transferPage(dataSearch[0] - 1)}
                   disabled={dataSearch[0] === 0} type="button"><i className="fa-solid fa-angle-left" />
@@ -188,14 +256,40 @@ function Home() {
                         <img src={product.imgProduct} alt="Denim Jeans" style={{ width: '100%' }} />
                         <h3>{product.brandProduct}</h3>
                         <p className="price">
+
                           {product.bonusSale !== 0 && (
-                            <del>{product.priceProduct * product.bonusSale}</del>
+                            <del>{product.priceProduct * (1 - product.bonusSale)}VNĐ</del>
                           )}
-                          {numeral(product.priceProduct).format('00,0 đ')}VND</p>
+
+                          <span className="price-no-bonus">{numeral(product.priceProduct).format('00,0 đ')}VNĐ</span></p>
                       </Link>
-                      <p>
-                        <button type="button" onClick={() => onAddToCart(product)} >Thêm giỏ hàng</button>
-                      </p>
+                      <div className="card__review_customer">
+                        <div className="card__review_customer-item">
+                          <i class="fa-solid fa-star"></i>
+                          <i class="fa-solid fa-star"></i>
+                          <i class="fa-solid fa-star"></i>
+                          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                        <div className="card__review_customer-item">Đã bán {product.totalSold}</div>
+                      </div>
+                      {isWithinThirtyDays(product.releaseDate) && (
+                        <img className="cart__img-new-prouct" src="img/new_product_two.png" />
+                      )}
+                      {product.qualityProduct === 0 && (
+                        <div className="cart__img-product-sold-out-item">
+
+                          <Link to={`/productDetail/${product.id}`} style={{ textDecoration: 'none' }}><img className="cart__img-product-sold-out" src="img/sold-out.png" /></Link>
+                        </div>
+                      )}
+                      {localStorage.getItem("nameRole") === "ROLE_ADMIN" ? (
+                        <p>
+                          <button type="button"  >Thêm giỏ hàng</button>
+                        </p>
+                      ) : (
+                        <p>
+                          <button type="button" onClick={() => onAddToCart(product)} >Thêm giỏ hàng</button>
+                        </p>
+                      )}
+
                       {product.bonusSale !== 0 && (
                         <div className="card__sale-off">
                           <div className="card__sale-off-percent">{product.bonusSale * 100}%</div>
@@ -233,7 +327,7 @@ function Home() {
           <div className="home-pagination">
             <ul className="home-pagination-list">
               <li className="home-pagination-item">
-                <button style={{ borderTopLeftRadius: '5px', borderBottomLeftRadius: '5px', minWidth: '100px' }}>Trang {dataSearch[0]}/{loopCount - 1}</button>
+                <button style={{ borderTopLeftRadius: '5px', borderBottomLeftRadius: '5px', minWidth: '100px' }}>Trang {dataSearch[0]+1}/{loopCount }</button>
               </li>
               {dataSearch[0] !== 0 && (
                 <>
@@ -274,7 +368,7 @@ function Home() {
                         onClick={() => transferPage(index)}
                         className={dataSearch[0] === index ? 'active' : ''} style={dataSearch[0] === index ? { background: 'rgb(122, 88, 3)' } : {}}
                       >
-                        {index}
+                        {index+1}
                       </button>
                     </li>
                   );
@@ -303,7 +397,21 @@ function Home() {
             </ul>
           </div>
         </div>
+
+
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </>
   )
 }

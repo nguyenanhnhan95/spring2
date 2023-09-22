@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface IUserService {
     Optional<Users> getUserByEmail(String email);
+    Optional<Users> getUserById(Integer id);
 }

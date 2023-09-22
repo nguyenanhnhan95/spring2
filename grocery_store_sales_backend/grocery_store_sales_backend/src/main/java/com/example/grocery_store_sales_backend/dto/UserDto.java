@@ -23,6 +23,7 @@ public class UserDto {
 
     private boolean flagUser;
 
+
     private String password;
 
     public UserDto() {

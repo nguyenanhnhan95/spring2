@@ -1,3 +1,20 @@
 
+::-webkit-scrollbar {
+    width: 1rem;
+}
 
+::-webkit-scrollbar-track {
+    background-color: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #FE9126;
+    border-radius: 10px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb :hover {
+    background-color: #FE9126;
+}
 /*Login*/

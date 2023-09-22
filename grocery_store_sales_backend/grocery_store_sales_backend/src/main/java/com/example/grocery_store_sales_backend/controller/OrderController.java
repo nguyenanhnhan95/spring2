@@ -2,18 +2,18 @@ package com.example.grocery_store_sales_backend.controller;
 
 import com.example.grocery_store_sales_backend.Projection.IOrderCustomerProjection;
 import com.example.grocery_store_sales_backend.Projection.IOrderProjection;
+import com.example.grocery_store_sales_backend.model.Order;
 import com.example.grocery_store_sales_backend.service.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
@@ -32,13 +32,33 @@ public class OrderController {
     }
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/manage")
-    public ResponseEntity<Page<IOrderProjection>> getOrderManage(@Param("name")String name, Pageable pageable){
-        if(orderService.getOrdersManage(name,pageable).isEmpty()){
+    public ResponseEntity<Page<IOrderProjection>> getOrderManage(@RequestParam("page")String page,@Param("name")String name,@RequestParam("dateOne")String dateOne,@RequestParam("dateTwo") String dateTwo){
+        Pageable pageable= PageRequest.of(Integer.parseInt(page),5);
+        if(orderService.getOrdersManage(name,dateOne,dateTwo,pageable).isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }else {
-            return new ResponseEntity<>(orderService.getOrdersManage(name,pageable),HttpStatus.OK);
+            return new ResponseEntity<>(orderService.getOrdersManage(name,dateOne,dateTwo,pageable),HttpStatus.OK);
         }
     }
-//    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/information")
+    public ResponseEntity<Page<IOrderProjection>> getOrderByIdManage(@RequestParam("id")String id,Pageable pageable){
+        System.out.println(id);
+        if(orderService.getByIdOrderAll(pageable, Long.valueOf(id)).isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else {
+            return new ResponseEntity<>(orderService.getByIdOrderAll(pageable, Long.valueOf(id)),HttpStatus.OK);
+        }
+    }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PatchMapping("/update")
+    public ResponseEntity<?> getUpdateStatusOrder(@RequestParam("id")String id,@RequestParam("type")String type){
+        if(orderService.updateStatusOrder(Long.parseLong(id),Integer.parseInt(type))){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 }
