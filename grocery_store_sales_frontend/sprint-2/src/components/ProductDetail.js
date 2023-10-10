@@ -258,10 +258,10 @@ function ProductDetail() {
                   <i className="fa-solid fa-star fa-sm" style={{ color: '#fd0814' }} />
                 </div>
                 <div className="detail__product__right-item-review-number">
-                  15 <span className>Đánh giá</span>
+                  15 <span >Đánh giá</span>
                 </div>
                 <div className="detail__product__right-item-sale-number">
-                  {product.totalSold}<span>Đã Bán</span>
+                  {product.totalSold} <span>Đã Bán</span>
                 </div>
               </li>
               <li className="detail__product__right-item detail__product__right-item-price">

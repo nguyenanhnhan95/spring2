@@ -52,7 +52,7 @@ function Home() {
       console.log(data.content);
       console.log(search);
       let numberPage = Math.ceil(data.totalElements / 10);
-
+      console.log(numberPage)
       setLoopCount(numberPage)
       setProducts(data.content)
     })

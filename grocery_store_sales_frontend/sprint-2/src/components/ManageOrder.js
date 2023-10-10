@@ -25,7 +25,7 @@ function ManageOrder() {
     console.log(orders)
     useEffect(() => {
         getOrderManage()
-    }, [])
+    }, [page])
     const getOrderManage = () => {
         getOrderManageDB(page, searchOrder[0], searchOrder[1], searchOrder[2], headers).then((data) => {
             let numberPage = Math.ceil(data.totalElements / 5);
@@ -58,10 +58,10 @@ function ManageOrder() {
     const handleSearchOrder = (value) => {
         getOrderManageDB(page, value.name, value.dateOne, value.dateTwo, headers).then((data) => {
             let numberPage = Math.ceil(data.totalElements / 5);
-
             setLoopCount(numberPage)
             setOrders(data.content)
             console.log(data.content)
+            console.log(page)
         })
             .catch((error) => {
                 if (error.response && error.response.status === 404) {

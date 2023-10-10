@@ -194,7 +194,7 @@ function CartCustomer() {
                 {cards[0].users.accumulatedPoints !== 0 ? (
                   <>
                     <div className="card_customer-left-payment-use-point">
-                      <div className="card_customer-left-payment-use">Sử dụng điểm tích lũy</div>
+                      <div className="card_customer-left-payment-use">Sử dụng điểm tích lũy :<b> {cards[0].users.accumulatedPoints}</b></div>
                       <div className="card_customer-left-payment-point"><input type="checkbox" checked={accumulate ? true : false} onChange={() => setAccumulate(!accumulate)} /></div>
                     </div>
 
